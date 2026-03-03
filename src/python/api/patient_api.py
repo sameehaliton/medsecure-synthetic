@@ -20,11 +20,17 @@ def get_patient():
     patient = cursor.fetchone()
     conn.close()
     if patient:
-        name = patient[1]
-        # CWE-79: unsanitized patient name passed directly to template context
-        return render_template("patient_detail.html", patient_name=name)
+        return "found", 200
     return "Not found", 404
 
 
+# CWE-79: XSS — name comes directly from HTTP request parameter into template with | safe
+@app.route("/patient-profile")
+def patient_profile():
+    # Vulnerable: user-controlled input flows directly into template rendered with | safe
+    name = request.args.get("name", "")
+    return render_template("patient_detail.html", patient_name=name)
+
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()

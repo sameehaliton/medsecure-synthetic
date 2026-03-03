@@ -47,4 +47,4 @@ jobs:
           # SecurityPilot's SARIF parser reads code snippets directly from SARIF
           # instead of making a second API call per finding.
           upload: true
-          add-snippet: true
+          add-snippets: true
