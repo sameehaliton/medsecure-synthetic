@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html>
+<head><title>Patient Detail</title></head>
+<body>
+  <h1>Patient Record</h1>
+  <!-- CWE-79: Jinja2 | safe disables autoescaping — XSS sink -->
+  <p>Name: {{ patient_name | safe }}</p>
+</body>
+</html>

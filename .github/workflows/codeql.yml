@@ -1,0 +1,50 @@
+name: "CodeQL Security Scan"
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    - cron: '30 2 * * 1'   # Weekly Monday 2:30 AM UTC
+  workflow_dispatch:         # Manual trigger — used by SecurityPilot after PR merge
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'java', 'python' ]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          # security-extended includes more queries than the default pack —
+          # covers CWE-89, CWE-79, CWE-22, CWE-798 and more
+          queries: security-extended
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"
+          # [NOVEL] Embeds full source file contents in the SARIF artifacts array.
+          # Eliminates the separate GitHub Contents API call during enrichment.
+          # SecurityPilot's SARIF parser reads code snippets directly from SARIF
+          # instead of making a second API call per finding.
+          upload: true
+          add-snippet: true
