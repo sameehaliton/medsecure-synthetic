@@ -1,0 +1,5 @@
+- description: Java security-extended queries plus CWE-798 hardcoded credentials
+- import: codeql-suites/java-security-extended.qls
+  from: codeql/java-queries
+- query: Security/CWE/CWE-798/HardcodedCredentialsApiCall.ql
+  from: codeql/java-queries

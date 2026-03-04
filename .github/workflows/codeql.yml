@@ -31,12 +31,12 @@ jobs:
         uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
-          # Java uses a config file to add CWE-798 (HardcodedCredentialsApiCall,
-          # @precision low) on top of security-extended. Python uses queries input
-          # directly since it doesn't need extra queries.
-          # The queries input must be empty when config-file is set (config wins).
-          config-file: ${{ matrix.language == 'java' && '.github/codeql/java-config.yml' || '' }}
-          queries: ${{ matrix.language != 'java' && 'security-extended' || '' }}
+          # Java uses a local .qls file that extends security-extended with
+          # CWE-798 (HardcodedCredentialsApiCall, @precision low, excluded from
+          # security-extended by default). Local .qls files support 'from: pack'
+          # imports and work with both local and remote CodeQL runners.
+          # Python uses security-extended directly (no extra queries needed).
+          queries: ${{ matrix.language == 'java' && '.github/codeql/java-security-with-cwe798.qls' || 'security-extended' }}
 
       - name: Autobuild
         uses: github/codeql-action/autobuild@v4
