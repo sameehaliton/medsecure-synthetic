@@ -1,0 +1,3 @@
+queries:
+  - uses: security-extended
+  - uses: codeql/java-queries:Security/CWE/CWE-798/HardcodedCredentialsApiCall.ql
