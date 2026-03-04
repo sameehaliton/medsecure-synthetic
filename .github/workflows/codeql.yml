@@ -25,10 +25,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4  # already latest
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
           # security-extended includes more queries than the default pack —
@@ -36,15 +36,13 @@ jobs:
           queries: security-extended
 
       - name: Autobuild
-        uses: github/codeql-action/autobuild@v3
+        uses: github/codeql-action/autobuild@v4
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4
         with:
           category: "/language:${{ matrix.language }}"
-          # [NOVEL] Embeds full source file contents in the SARIF artifacts array.
-          # Eliminates the separate GitHub Contents API call during enrichment.
-          # SecurityPilot's SARIF parser reads code snippets directly from SARIF
-          # instead of making a second API call per finding.
+          # Note: add-snippets was removed from codeql-action and no longer works.
+          # SecurityPilot's Phase 1 enrichment uses the GitHub Contents API to fetch
+          # affected code snippets (the designed fallback path).
           upload: true
-          add-snippets: true
