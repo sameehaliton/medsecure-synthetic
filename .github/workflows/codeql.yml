@@ -31,12 +31,11 @@ jobs:
         uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
-          # Java uses a local .qls file that extends security-extended with
-          # CWE-798 (HardcodedCredentialsApiCall, @precision low, excluded from
-          # security-extended by default). Local .qls files support 'from: pack'
-          # imports and work with both local and remote CodeQL runners.
-          # Python uses security-extended directly (no extra queries needed).
-          queries: ${{ matrix.language == 'java' && '.github/codeql/java-security-with-cwe798.qls' || 'security-extended' }}
+          # security-extended covers CWE-89, CWE-22, CWE-79.
+          # CWE-798 (hardcoded credentials) is @precision low in all CodeQL Java
+          # queries and cannot be added via the queries input or config uses: —
+          # both convert to uses: directives which only accept built-in aliases.
+          queries: security-extended
 
       - name: Autobuild
         uses: github/codeql-action/autobuild@v4
