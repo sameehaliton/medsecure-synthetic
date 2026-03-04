@@ -31,9 +31,10 @@ jobs:
         uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
-          # security-extended includes more queries than the default pack —
-          # covers CWE-89, CWE-79, CWE-22, CWE-798 and more
-          queries: security-extended
+          # security-extended covers CWE-89, CWE-79, CWE-22.
+          # CWE-798 (HardcodedCredentialsApiCall) is @precision low so excluded
+          # from security-extended — added explicitly for Java only via ternary.
+          queries: ${{ matrix.language == 'java' && 'security-extended,codeql/java-queries:Security/CWE/CWE-798/HardcodedCredentialsApiCall.ql' || 'security-extended' }}
 
       - name: Autobuild
         uses: github/codeql-action/autobuild@v4

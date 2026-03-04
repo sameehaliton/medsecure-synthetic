@@ -1,5 +1,5 @@
 import sqlite3
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template_string
 
 app = Flask(__name__)
 DB_PATH = "patients.db"
@@ -24,12 +24,13 @@ def get_patient():
     return "Not found", 404
 
 
-# CWE-79: XSS — name comes directly from HTTP request parameter into template with | safe
+# CWE-79: XSS — user input injected directly into render_template_string (known CodeQL sink)
 @app.route("/patient-profile")
 def patient_profile():
-    # Vulnerable: user-controlled input flows directly into template rendered with | safe
     name = request.args.get("name", "")
-    return render_template("patient_detail.html", patient_name=name)
+    # Vulnerable: user-controlled input embedded into template string before rendering
+    template = "<html><body><h1>Patient: " + name + "</h1></body></html>"
+    return render_template_string(template)
 
 
 if __name__ == "__main__":
